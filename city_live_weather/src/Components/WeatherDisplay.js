@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
+import { ClipLoader } from "react-spinners";
 import { getRequiredWeatherData } from "../UtilityFunctions/getRequiredWeatherData.js";
 
 const WeatherDisplay = () => {
   const inputRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [inputCity, setInputCity] = useState("");
   const [callWeatherAPI, setCallWeatherAPI] = useState(false);
   const [weatherDetails, setWeatherDetails] = useState({
@@ -15,18 +17,21 @@ const WeatherDisplay = () => {
   let timer = null;
 
   const handleChange = async (event) => {
+    setIsLoading(true);
     setInputCity(event.target.value);
     const firstValue = event.target.value;
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
-      if( firstValue === ''){setWeatherDetails({
-    city: "",
-    tempreature: "",
-    condition: "",
-    feelsLike: "",
-    windSpeed: "",
-  })}
-      else if (firstValue == inputRef.current.value) {
+      if (firstValue === "") {
+        setWeatherDetails({
+          city: "",
+          tempreature: "",
+          condition: "",
+          feelsLike: "",
+          windSpeed: "",
+        });
+        setIsLoading(false);
+      } else if (firstValue == inputRef.current.value) {
         setCallWeatherAPI(true);
       }
     }, 1000);
@@ -37,6 +42,7 @@ const WeatherDisplay = () => {
       let newWeatherInformation = await getRequiredWeatherData(
         inputRef.current.value
       );
+      setIsLoading(false);
       setWeatherDetails(newWeatherInformation);
       setCallWeatherAPI(false);
     }
@@ -61,13 +67,19 @@ const WeatherDisplay = () => {
           placeholder="Enter City"
           className="w-full px-4 py-2 mb-6 text-lg border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        {isLoading ? (
+          <div className="flex flex-row align-middle justify-center text-blue-500 pb-3">
+            <ClipLoader color="#3B82F6" />
+          </div>
+        ) : null}
         <div className="space-y-3 text-gray-800">
           <p>
             <span className="font-semibold">City:</span> {weatherDetails.city}
           </p>
           <p>
             <span className="font-semibold">Temperature:</span>{" "}
-            {weatherDetails.tempreature}{" "} {weatherDetails.tempreature ? <>&deg;C</> : ""}
+            {weatherDetails.tempreature}{" "}
+            {weatherDetails.tempreature ? <>&deg;C</> : ""}
           </p>
           <p>
             <span className="font-semibold">Condition:</span>{" "}
@@ -75,11 +87,12 @@ const WeatherDisplay = () => {
           </p>
           <p>
             <span className="font-semibold">Feels Like:</span>{" "}
-            {weatherDetails.feelsLike}{" "} {weatherDetails.feelsLike ? <>&deg;C</> : ""}
+            {weatherDetails.feelsLike}{" "}
+            {weatherDetails.feelsLike ? <>&deg;C</> : ""}
           </p>
           <p>
             <span className="font-semibold">Wind Speed:</span>{" "}
-            {weatherDetails.windSpeed}{" "}{weatherDetails.windSpeed ? "Km/h": ""}
+            {weatherDetails.windSpeed} {weatherDetails.windSpeed ? "Km/h" : ""}
           </p>
         </div>
       </div>
