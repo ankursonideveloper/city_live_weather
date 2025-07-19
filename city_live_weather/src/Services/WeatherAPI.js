@@ -8,14 +8,20 @@ console.log(`apiKey: ${apiKey}`);
 const baseUrl = process.env.WEATHER_API_BASE_URL;
 
 export class WeatherAPI {
-    constructor(cityName) {
+        constructor(cityName) {
         this.cityName = cityName
-    }
+        }
 
-    getCurrentWeather = async() =>{
-        const url = `${baseUrl}/current.json?q=${this.cityName}&key=${apiKey}`;
-        let response = await axios.get(url);
-        console.log(`Response: ${JSON.stringify(response.data, null, 2)}`);
-  }
+        getCurrentWeather = async() =>{
+            try{
+                const url = `${baseUrl}/current.json?q=${this.cityName}&key=${apiKey}`;
+                let response = await axios.get(url);
+                if (response.status == 200) {return {success: true, data: response.data }} else  return {success: false, error: response.error.message }
+            }
+            catch(err){
+                console.error(`Error in WeatherAPI: ${err.stack}`);
+                throw err.message;
+            }
+        }
 }
 
