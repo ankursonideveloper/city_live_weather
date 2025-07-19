@@ -1,9 +1,9 @@
 import './App.css';
-import WeatherDisplay from './Components/WeatherDisplay';
+import WeatherDisplay from './Components/WeatherDisplay.js';
 
 function App() {
   return (
-    <div className="bg-blue-100">
+    <div>
       <WeatherDisplay/>
     </div>
   );
